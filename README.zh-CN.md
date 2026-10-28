@@ -89,7 +89,7 @@ python -m hwtriage --perm      # 3. 哪些功能需要额外授权？（可选�
 
 读 CPU 温度需要**管理员权限**。Skyube **绝不会**自行提权，只告诉你该怎么做。
 
-- **Windows**：双击 `启用CPU温度.bat` —— 它会请求提权、启动 LHM、验证 WMI 命名空间，
+- **Windows**：双击 `enable-cpu-temp.bat` —— 它会请求提权、启动 LHM、验证 WMI 命名空间，
   然后重新测量。若提示命名空间不存在，在 LHM 里勾选 `Options → WMI Provider` 再跑一次。
 - 或者告诉 Skyube 你的位置：`set HWTRIAGE_LHM_PATH=<目录>`；
   把 LHM 放在 `C:\Program Files\LibreHardwareMonitor\` 下也会被自动找到。
@@ -115,7 +115,7 @@ python -m hwtriage --perm      # 3. 哪些功能需要额外授权？（可选�
 python -m hwtriage --cron          # 试一下
 
 # Windows——一键安装（自动探测路径）
-安装定时巡检.bat
+install-scheduled-check.bat
 
 # Linux / macOS
 0 12 * * * cd ~/skyube && python3 -m hwtriage --cron >> _cron.log 2>&1

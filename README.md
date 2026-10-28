@@ -94,7 +94,7 @@ On many laptops the ACPI layer doesn't expose CPU temperature. Skyube falls back
 Reading CPU temperature requires **administrator rights**. Skyube will **never**
 elevate itself; it only tells you what to do.
 
-- **Windows:** double-click `启用CPU温度.bat` — it requests elevation, starts LHM,
+- **Windows:** double-click `enable-cpu-temp.bat` — it requests elevation, starts LHM,
   verifies the WMI namespace, then re-measures. If the namespace is missing, tick
   `Options → WMI Provider` inside LHM and run it once more.
 - Or point Skyube at your copy: `set HWTRIAGE_LHM_PATH=<folder>` — or place LHM under
@@ -122,7 +122,7 @@ Silent by design: the process prints nothing at all when there is nothing to rep
 python -m hwtriage --cron          # try it
 
 # Windows — one-click installer (auto-detects paths)
-安装定时巡检.bat
+install-scheduled-check.bat
 
 # Linux / macOS
 0 12 * * * cd ~/skyube && python3 -m hwtriage --cron >> _cron.log 2>&1

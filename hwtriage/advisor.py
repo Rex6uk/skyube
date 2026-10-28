@@ -156,7 +156,7 @@ def build_advice(metrics: List[Metric]) -> List[Dict[str, str]]:
             "开一个可选项：让工具能读到 CPU 温度",
             "当前 CPU 温度读不到。不是工具坏了 —— 读 CPU 温度需要管理员权限跑 "
             "LibreHardwareMonitor，普通权限系统不给",
-            "右键「以管理员身份运行」`启用CPU温度.bat`，"
+            "右键「以管理员身份运行」`enable-cpu-temp.bat`，"
             "或在 LHM 里勾 Options → WMI Provider。不开也不影响其他功能",
             gain="能看到 CPU 温度，散热问题早发现",
             cost="需要一次管理员授权（只读传感器，不改任何设置）"))
