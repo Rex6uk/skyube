@@ -56,7 +56,7 @@ python -m hwtriage --perm      # 3. 哪些功能需要额外授权？（可选�
 | `python -m hwtriage --guard` | 出处置**计划**（默认 dry-run） |
 | `python -m hwtriage --guard --apply` | 真正执行：只回收工作集；只有 `CRITICAL` 才可能被终止 |
 | `python -m hwtriage --only gpu` | 只跑单个采集器 |
-| `python -m hwtriage.test_selftest` | 跑 **31 项**质量自检 |
+| `python -m hwtriage.test_selftest` | 跑 **32 项**质量自检 |
 
 `--only` 可用采集器：`memory` `cpu` `gpu` `thermal` `disk` `process` `power` `hardware`
 
@@ -194,7 +194,7 @@ hwtriage/
   advisor.py         # 配置建议
   permguide.py       # 权限引导（绝不自行提权）
   paths.py           # 运行时发现 Python / LibreHardwareMonitor
-  test_selftest.py   # 31 项质量自检
+  test_selftest.py   # 32 项质量自检
   collectors/
     base.py          # 采集器基类 + 注册表
     memory.py cpu.py gpu.py thermal.py

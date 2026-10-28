@@ -57,7 +57,7 @@ LibreHardwareMonitor are discovered at runtime.
 | `python -m hwtriage --guard` | Disposal **plan only** (dry-run by default) |
 | `python -m hwtriage --guard --apply` | Act: reclaim working sets; only `CRITICAL` may be terminated |
 | `python -m hwtriage --only gpu` | Run a single collector |
-| `python -m hwtriage.test_selftest` | Run the 31-test quality suite |
+| `python -m hwtriage.test_selftest` | Run the 32-test quality suite |
 
 Collectors for `--only`: `memory` `cpu` `gpu` `thermal` `disk` `process` `power` `hardware`
 
@@ -176,7 +176,7 @@ These are always reported as `status=UNAVAILABLE` with a specific reason and
 ## Quality suite
 
 ```bash
-python -m hwtriage.test_selftest     # 31 tests, standard library only
+python -m hwtriage.test_selftest     # 32 tests, standard library only
 ```
 
 The suite guards properties that matter, not line coverage:
@@ -205,7 +205,7 @@ hwtriage/
   advisor.py         # configuration recommendations
   permguide.py       # permission guidance (never self-elevates)
   paths.py           # runtime discovery of Python / LibreHardwareMonitor
-  test_selftest.py   # 31-test quality suite
+  test_selftest.py   # 32-test quality suite
   collectors/
     base.py          # collector base class + registry
     memory.py cpu.py gpu.py thermal.py

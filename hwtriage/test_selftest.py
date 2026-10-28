@@ -259,6 +259,33 @@ class TestPermGuide(unittest.TestCase):
                              "permguide 不许有 %s —— 绝不能自动提权" % forbidden)
 
 
+class TestPackagingRules(unittest.TestCase):
+    """发布打包规则：别把 .github 一起排掉（真踩过）"""
+
+    def test_release_workflow_excludes_do_not_kill_github_dir(self):
+        """zip 的 -x "*.git*" 会把 .github/ 也排掉，导致 release 包缺 CI 配置。
+
+        ★ 只看真正的 zip 命令行，跳过注释 —— 否则注释里写"别用 *.git*"
+          反而会被自己判为违规（踩过这个自指坑）。
+        """
+        import os
+        repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        wf = os.path.join(repo, ".github", "workflows", "release.yml")
+        self.assertTrue(os.path.isfile(wf), "release.yml 不见了")
+        with open(wf, encoding="utf-8") as fh:
+            lines = fh.readlines()
+        zip_lines = [l for l in lines
+                     if "zip -r" in l or (l.strip().startswith("-x") and "#" not in l)]
+        self.assertTrue(zip_lines, "没找到 zip 打包命令")
+        joined = " ".join(zip_lines)
+        self.assertNotIn('"*.git*"', joined,
+                         '别用 "*.git*" —— 它会连 .github/ 一起排除')
+        self.assertIn(".github", "".join(lines), "workflow 本身应存在")
+        # 必须显式保住 .github：靠不排除它来实现
+        self.assertTrue('".git/*"' in joined,
+                        "应精确排除 .git/* 而不是通配 *.git*")
+
+
 class TestPaths(unittest.TestCase):
     """跨机器路径发现：任何电脑都能跑，不许写死本机路径"""
 
