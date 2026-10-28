@@ -1,0 +1,51 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+
+# ---- 本机产物（绝不能进仓库）----
+_backup_*/
+_temp_archive/
+_cron.log
+_cron_test.log
+*.log
+today.json
+t.json
+t2.json
+*err.txt
+
+# ---- 本机内部文档（含本机路径/内部流程，不对外）----
+今日复盘与明日规划_*.md
+今日进展_*.md
+验收报告_*.md
+质量提升报告_*.md
+产品升级报告_*.md
+GitHub自动发布调研_*.md
+发布就绪报告_*.md
+
+# ---- 编辑器/系统 ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- 密钥/凭据（铁律：永不入库）----
+*.key
+*.pem
+.env
+.env.*
+!env.example
+*secret*
+*token*
+credentials*
