@@ -61,6 +61,17 @@ LibreHardwareMonitor are discovered at runtime.
 
 Collectors for `--only`: `memory` `cpu` `gpu` `thermal` `disk` `process` `power` `hardware`
 
+### Exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | Ran fine — and, for `--guard`, nothing to dispose of |
+| `1` | `--guard` only: a disposal plan has actions (dry-run still executed nothing) |
+| `2` | A module needed for the request is unavailable |
+
+So `python -m hwtriage --cron` works directly in a scheduler, and
+`python -m hwtriage --guard` returns non-zero only when it found something to do.
+
 ---
 
 ## The advisor (`--advice`)

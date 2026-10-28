@@ -60,6 +60,17 @@ python -m hwtriage --perm      # 3. 哪些功能需要额外授权？（可选�
 
 `--only` 可用采集器：`memory` `cpu` `gpu` `thermal` `disk` `process` `power` `hardware`
 
+### 退出码
+
+| 码 | 含义 |
+|---|---|
+| `0` | 正常跑完；对 `--guard` 还表示「没有该处置的东西」 |
+| `1` | 仅 `--guard`：处置计划里有动作（dry-run 依旧一行都没执行） |
+| `2` | 请求需要的模块不可用 |
+
+所以 `python -m hwtriage --cron` 可以直接挂定时任务，
+`python -m hwtriage --guard` 只有在真发现该处置的东西时才返回非 0。
+
 ---
 
 ## 配置顾问（`--advice`）
