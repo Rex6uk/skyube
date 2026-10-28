@@ -8,14 +8,16 @@
     python -m hwtriage --brief      # 只输出异常 + 读不到（精简巡检）
     python -m hwtriage --cron       # 静默：无异常不输出（挂定时任务）
     python -m hwtriage --json       # 机器读 JSON
+    python -m hwtriage --perm       # 权限引导：哪些功能需要额外权限（只提醒）
     python -m hwtriage --guard      # 只出处置计划（dry-run，绝不执行）
+    python -m hwtriage --guard --apply   # 真正执行回收（只有 CRITICAL 才会终止进程）
     python -m hwtriage --only gpu   # 只跑某个采集器
     python -m hwtriage --traceback  # 采集器异常时打印堆栈
 
-分层（团子统合）：
+分层：
     采集层 collectors/*  只读
-    报告层 report.py     只渲染（阿绫）
-    处置层 guard.py      只出计划/执行回收（巴迪）
+    报告层 report.py     只渲染
+    处置层 guard.py      只出计划/执行回收（默认 dry-run）
     顾问层 advisor.py    配置建议（每条带依据+代价，用户自己决定）
 """
 from __future__ import annotations
@@ -77,7 +79,7 @@ def main(argv=None):
         print(out if out else "所有功能都可用，无需额外授权。")
         return 0
 
-    # ---------- 处置计划（dry-run，只出计划不执行） ----------
+    # ---------- 处置：默认 dry-run，--apply 才真执行 ----------
     if want_guard:
         try:
             from . import guard as _guard
@@ -85,6 +87,12 @@ def main(argv=None):
             print("guard 模块不可用：%s（处置层尚未就绪）" % e)
             return 2
         plan = _guard.build_plan(metrics)      # 只读：算该处置什么
+        if "--apply" in argv:
+            print(_guard.render_plan(plan))    # 先回显计划，再执行
+            print("\n执行：")
+            for line in _guard.execute_plan(plan, apply=True):
+                print("  " + line)
+            return 0
         print(_guard.render_plan(plan))        # 只打印，不执行
         return 1 if plan.get("actions") else 0
 

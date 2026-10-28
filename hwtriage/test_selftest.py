@@ -230,13 +230,26 @@ class TestPermGuide(unittest.TestCase):
         self.assertIn("也完全能用", out)
 
     def test_hint_gives_concrete_steps(self):
-        """提示要具体到点哪里，不能只说'请用管理员'"""
+        """提示要具体到点哪里，不能只说'请用管理员'。
+
+        ★ 必须按平台判断：Windows 走 LibreHardwareMonitor（要提权 + 勾 WMI Provider），
+          而 Linux/macOS 根本不用 LHM（用 lm-sensors / istats），
+          拿 Windows 文案去断言 Linux 会误报失败（CI 上真踩过）。
+        """
+        import sys
         from . import permguide
         m = [Metric("cpu_temp.celsius", "CPU 温度", None, "C",
                     status=Status.UNAVAILABLE, note="需管理员")]
         out = permguide.render_hint(m)
-        self.assertTrue("WMI Provider" in out or "管理员身份运行" in out,
-                        "必须给出具体操作步骤")
+        if sys.platform == "win32":
+            self.assertTrue("WMI Provider" in out or "管理员身份运行" in out,
+                            "Windows 上必须给出具体操作步骤")
+        else:
+            # 非 Windows：不该出现 Windows 专用操作，且要给出本平台方案
+            self.assertNotIn("WMI Provider", out,
+                             "非 Windows 不该提 LHM 的 WMI Provider")
+            self.assertTrue("lm-sensors" in out or "istats" in out,
+                            "非 Windows 应给出本平台的温度读取方案")
 
     def test_never_auto_elevates(self):
         """铁律：不许有提权函数（不弹 UAC、不写计划任务）"""
@@ -263,7 +276,8 @@ class TestPaths(unittest.TestCase):
                     continue
                 path = os.path.join(root, f)
                 try:
-                    t = open(path, encoding="utf-8", errors="ignore").read()
+                    with open(path, encoding="utf-8", errors="ignore") as fh:
+                        t = fh.read()
                 except Exception:
                     continue
                 for token in ("D:\\Tools", "Users\\hp", "Python313"):

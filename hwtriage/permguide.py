@@ -63,8 +63,11 @@ def diagnose(metrics: List[Metric]) -> Dict[str, object]:
     lines = []
 
     if "cpu_temp" in blocked:
-        if not lhm:
-            # 跨机器：这台没装 LHM，给安装指引（不写死本机路径）
+        if sys.platform != "win32":
+            # 非 Windows：LibreHardwareMonitor 完全不适用，绝不该提 WMI / 提权
+            lines.append("· CPU 温度：" + lhm_hint().replace("\n", "\n  "))
+        elif not lhm:
+            # Windows 但没装 LHM
             lines.append("· CPU 温度：" + lhm_hint().replace("\n", "\n  "))
         elif not admin:
             lines.append("· CPU 温度：LibreHardwareMonitor 已找到（%s）" % lhm)
@@ -76,8 +79,10 @@ def diagnose(metrics: List[Metric]) -> Dict[str, object]:
             lines.append("  请确认 LHM 正在运行，且 Options → WMI Provider 已勾选。")
 
     if "smart" in blocked:
-        if not admin:
+        if sys.platform == "win32" and not admin:
             lines.append("· SMART 硬盘故障预测：需要管理员权限读（不读也不影响磁盘空间/健康度显示）")
+        elif sys.platform != "win32":
+            lines.append("· SMART 硬盘故障预测：需要 root 读（不读也不影响磁盘空间/健康度显示）")
 
     if not lines:
         return {"blocked": blocked, "hint": "", "optional": True}

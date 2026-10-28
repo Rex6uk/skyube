@@ -31,31 +31,47 @@ jobs:
           echo "LANG=$LANG LC_ALL=$LC_ALL"
           python -c "import sys,locale;print('stdout:',sys.stdout.encoding,'preferred:',locale.getpreferredencoding(False))"
 
+      # 真跑。失败就是失败 —— 不能吞掉退出码（曾经的"假绿"教训）
       - name: Run quality suite
-        id: suite
-        continue-on-error: true
         env:
           PYTHONIOENCODING: utf-8
           PYTHONUTF8: "1"
         run: |
-          set +e
-          python -m hwtriage.test_selftest -v > ci-output.txt 2>&1
-          echo "exit=$?" >> ci-output.txt
-          tail -60 ci-output.txt
-          exit 0
+          set -o pipefail
+          python -m hwtriage.test_selftest -v 2>&1 | tee ci-output.txt
 
-      - name: Publish log to ci-log branch (so it can be read without auth)
+      # 无论成败都把日志推到 ci-log 分支，这样不用 token 也能读
+      - name: Publish log to ci-log branch
         if: always()
         run: |
           set +e
           git config user.name "ci-bot"
           git config user.email "ci-bot@users.noreply.github.com"
           git checkout -B ci-log
-          cp ci-output.txt ci-log.txt 2>/dev/null || echo "no output file" > ci-log.txt
+          cp ci-output.txt ci-log.txt 2>/dev/null || echo "no output" > ci-log.txt
+          echo "--- exit: ${{ job.status }} ---" >> ci-log.txt
           git add -f ci-log.txt
-          git commit -m "ci log for ${GITHUB_SHA}" || echo "nothing to commit"
+          git commit -m "ci log for ${GITHUB_SHA}" >/dev/null
           git push -f origin ci-log
+          exit 0
 
-      - name: Fail if suite failed
-        if: steps.suite.outcome != 'success'
-        run: exit 1
+  release:
+    name: Create release
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Package source
+        run: |
+          mkdir -p dist
+          zip -r dist/skyube-${GITHUB_REF_NAME}.zip . \
+            -x "*.git*" -x "dist/*" -x "__pycache__/*" -x "*.pyc"
+
+      - name: Publish
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          generate_release_notes: true
+          draft: false
