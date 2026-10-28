@@ -40,9 +40,9 @@ jobs:
           set -o pipefail
           python -m hwtriage.test_selftest -v 2>&1 | tee ci-output.txt
 
-      # 无论成败都把日志推到 ci-log 分支，这样不用 token 也能读
+      # 只在失败时把日志推到 ci-log 分支（成功不留垃圾分支），不用 token 也能读
       - name: Publish log to ci-log branch
-        if: always()
+        if: failure()
         run: |
           set +e
           git config user.name "ci-bot"
