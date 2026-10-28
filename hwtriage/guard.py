@@ -168,7 +168,7 @@ def render_plan(plan: Dict[str, Any]) -> str:
         lines.append("")
         lines.append("注：" + n)
     lines.append("=" * 74)
-    lines.append("要真正执行：python -m hwtriage.guard --apply（CRITICAL 才会杀，"
+    lines.append("要真正执行：python -m hwtriage --guard --apply（CRITICAL 才会杀，"
                  "保护名单永不碰）")
     return "\n".join(lines)
 
