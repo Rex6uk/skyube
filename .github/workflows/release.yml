@@ -66,8 +66,14 @@ jobs:
       - name: Package source
         run: |
           mkdir -p dist
+          # 只排 .git 目录本身。旧的 -x "*.git*" 把 .gitignore/.gitattributes/.github
+          # 一起吃了，第一个 Release 就这么少发了三个文件且 CI 照样绿。
           zip -r dist/skyube-${GITHUB_REF_NAME}.zip . \
-            -x "*.git*" -x "dist/*" -x "__pycache__/*" -x "*.pyc"
+            -x ".git/*" -x "dist/*" -x "*__pycache__*" -x "*.pyc"
+
+      # 打包成功 ≠ 资产可用：发出去就是对外的承诺，先验内容再发
+      - name: Verify the artifact
+        run: python scripts/verify_artifact.py dist/skyube-${GITHUB_REF_NAME}.zip
 
       - name: Publish
         uses: softprops/action-gh-release@v2
